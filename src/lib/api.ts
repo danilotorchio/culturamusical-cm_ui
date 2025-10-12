@@ -21,12 +21,18 @@ export const fetchOptionsGET = (cache?: RequestCache): FetchOptions => ({
   cache,
 });
 
+export const fetchOptionsPOST = (data?: any): FetchOptions => ({
+  method: 'POST',
+  body: data,
+});
+
 export async function fetchAPI<T>(
   endpoint: string,
   options: FetchOptions = { method: 'GET' },
 ): Promise<{
   data?: T;
   error?: string;
+  status: number;
 }> {
   const config: RequestInit = {
     method: options.method || 'GET',
@@ -41,12 +47,12 @@ export async function fetchAPI<T>(
   const responseData = await response.json();
 
   if (!response.ok) {
-    return { error: responseData.error || 'An error occurred' };
+    return { error: responseData.error || 'An error occurred', status: response.status };
   }
 
   if (responseData && responseData.data) {
-    return { data: responseData.data as T };
+    return { data: responseData.data as T, status: response.status };
   }
 
-  return {};
+  return { data: responseData, status: response.status };
 }
