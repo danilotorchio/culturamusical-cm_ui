@@ -1,7 +1,7 @@
 'use client';
 
 import { CircleAlert } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import z from 'zod';
 
@@ -25,6 +25,8 @@ type FormLogin = z.infer<typeof formSchema>;
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const { login } = useAuth();
 
   const { control, handleSubmit } = useForm<FormLogin>({
@@ -41,7 +43,14 @@ export default function LoginForm() {
     try {
       const { user } = await mutateAsync(data);
       login(user);
-      // router.replace('/dashboard');
+
+      const from = searchParams.get('from');
+
+      if (from) {
+        router.replace(from);
+      } else {
+        router.replace('/dashboard');
+      }
     } catch (error) {
       console.error('Login error:', error);
     }

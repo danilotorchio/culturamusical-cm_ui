@@ -1,3 +1,5 @@
+import { getAuthToken } from './auth';
+
 type FetchOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: any;
@@ -34,10 +36,13 @@ export async function fetchAPI<T>(
   error?: string;
   status: number;
 }> {
+  const token = await getAuthToken();
+
   const config: RequestInit = {
     method: options.method || 'GET',
     headers: {
       'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
     },
     ...(options.body && { body: JSON.stringify(options.body) }),
     ...(options.cache && { cache: options.cache }),
@@ -48,6 +53,10 @@ export async function fetchAPI<T>(
 
   if (!response.ok) {
     return { error: responseData.error || 'An error occurred', status: response.status };
+  }
+
+  if (process.env.NODE_ENV === 'development') {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 
   if (responseData && responseData.data) {
