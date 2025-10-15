@@ -6,5 +6,6 @@ export type LoginDto = {
 };
 
 export type LoginResponseDto = {
+  token: string;
   user: UserModel;
 };

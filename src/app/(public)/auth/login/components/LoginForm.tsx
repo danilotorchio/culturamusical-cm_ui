@@ -49,7 +49,7 @@ export default function LoginForm() {
       if (from) {
         router.replace(from);
       } else {
-        router.replace('/dashboard');
+        router.replace('/enrollments');
       }
     } catch (error) {
       console.error('Login error:', error);

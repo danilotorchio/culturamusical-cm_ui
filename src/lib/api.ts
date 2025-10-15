@@ -28,6 +28,11 @@ export const fetchOptionsPOST = (data?: any): FetchOptions => ({
   body: data,
 });
 
+export const fetchOptionsPUT = (data?: any): FetchOptions => ({
+  method: 'PUT',
+  body: data,
+});
+
 export async function fetchAPI<T>(
   endpoint: string,
   options: FetchOptions = { method: 'GET' },

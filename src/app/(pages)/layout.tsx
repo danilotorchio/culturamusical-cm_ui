@@ -1,15 +1,10 @@
-import Link from 'next/link';
 import { PropsWithChildren } from 'react';
 
-import {
-  Sidebar,
-  SidebarHeader,
-  SidebarInset,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-} from '@/components/ui/sidebar';
+import { Separator } from '@radix-ui/react-separator';
+
+import AppBreadcrumb from '@/components/layout/app-breadcrumb';
+import AppSidebar from '@/components/layout/app-sidebar';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 
 const sideBarStyle = {
   '--sidebar-width': 'calc(var(--spacing) * 72)',
@@ -19,21 +14,17 @@ const sideBarStyle = {
 export default function PagesLayout({ children }: PropsWithChildren) {
   return (
     <SidebarProvider style={sideBarStyle}>
-      <Sidebar collapsible="offcanvas" variant="inset">
-        <SidebarHeader>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
-                <Link href="/dashboard">
-                  <span className="text-base font-semibold">Cultura Musical</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarHeader>
-      </Sidebar>
+      <AppSidebar />
 
       <SidebarInset>
+        <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
+          <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" />
+            <AppBreadcrumb />
+          </div>
+        </header>
+
         <div className="flex flex-1 flex-col gap-2 p-4">{children}</div>
       </SidebarInset>
     </SidebarProvider>

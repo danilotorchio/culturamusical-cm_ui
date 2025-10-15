@@ -1,8 +1,16 @@
+import { type ClassValue } from 'clsx';
+
+import { cn } from '@/lib/utils';
+
 import { Spinner } from './ui/spinner';
 
-export default function Loading() {
+type LoadingProps = {
+  className?: ClassValue;
+};
+
+export default function Loading({ className }: LoadingProps) {
   return (
-    <div className="flex flex-1 items-center justify-center border border-dashed rounded-lg">
+    <div className={cn('flex flex-1 items-center justify-center border border-dashed rounded-lg', className)}>
       <Spinner className="size-8" />
     </div>
   );

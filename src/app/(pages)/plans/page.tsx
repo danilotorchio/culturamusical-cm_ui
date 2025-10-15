@@ -1,13 +1,8 @@
-import { Suspense } from 'react';
-
-import Loading from '@/components/loading';
-import { Button } from '@/components/ui/button';
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item';
 import { Separator } from '@/components/ui/separator';
 
-import { PlansTable } from './components/TablePlans';
-
-
+import { PlanForm } from './components/PlanForm';
+import { PlanList } from './components/PlanList';
 
 export default async function PlansPage() {
   return (
@@ -19,17 +14,12 @@ export default async function PlansPage() {
         </ItemContent>
 
         <ItemActions>
-          <Button variant="outline" size="sm" disabled>
-            Adicionar novo
-          </Button>
+          <PlanForm />
         </ItemActions>
       </Item>
 
       <Separator />
-
-      <Suspense fallback={<Loading />}>
-        <PlansTable />
-      </Suspense>
+      <PlanList />
     </div>
   );
 }

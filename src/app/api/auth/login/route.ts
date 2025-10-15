@@ -38,5 +38,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  return NextResponse.json({ error: 'Invalid response from server' }, { status: HttpStatus.INTERNAL_SERVER_ERROR });
+  return NextResponse.json(
+    { error: 'Invalid response from server' },
+    { headers: { 'Content-Type': 'application/json' }, status: HttpStatus.INTERNAL_SERVER_ERROR },
+  );
 }
