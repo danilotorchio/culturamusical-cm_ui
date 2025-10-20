@@ -1,12 +1,8 @@
-import { Suspense } from 'react';
-
-import Loading from '@/components/loading';
-import { Button } from '@/components/ui/button';
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item';
 import { Separator } from '@/components/ui/separator';
 
-import { EnrollmentsStats } from './components/EnrollmentStats';
-import { EnrollmentsTable } from './components/EnrollmentsTable';
+import EnrollmentForm from './components/EnrollmentForm';
+import { EnrollmentList } from './components/EnrollmentList';
 
 export default async function EnrollmentsPage() {
   return (
@@ -18,21 +14,13 @@ export default async function EnrollmentsPage() {
         </ItemContent>
 
         <ItemActions>
-          <Button variant="outline" size="sm" disabled>
-            Nova matrícula
-          </Button>
+          <EnrollmentForm />
         </ItemActions>
       </Item>
 
       <Separator />
 
-      <Suspense fallback={<Loading className="max-h-48" />}>
-        <EnrollmentsStats />
-      </Suspense>
-
-      <Suspense fallback={<Loading />}>
-        <EnrollmentsTable />
-      </Suspense>
+      <EnrollmentList />
     </div>
   );
 }

@@ -1,11 +1,22 @@
-import { PersonModel } from '../person';
-import { PlanModel } from '../plan';
+import { EntityStatus } from '../types';
 
 export type EnrollmentModel = {
-  id: number;
-  beginDate: string;
+  enrollmentId: number;
   personId: number;
-  person?: PersonModel;
+  personName: string;
+  planName: string;
+  beginDate: Date;
+  endDate: Date;
+  status: EntityStatus;
+};
+
+export type EnrollmentCreateDto = {
   planId: number;
-  plan?: PlanModel;
+  beginDate: Date;
+
+  personId: number | undefined;
+  name: string | undefined;
+  email: string | undefined;
+  phone: string | undefined;
+  birthDate: Date | undefined;
 };

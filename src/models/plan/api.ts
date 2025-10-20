@@ -8,7 +8,7 @@ export const getPlans: GetPlans = async (): Promise<PlanModel[]> => {
   try {
     const response = await fetch(endpoint);
     if (!response.ok) {
-      throw new Error('Failed to fetch plans');
+      throw new Error('Falha ao buscar planos. Por favor, tente novamente em alguns instantes.');
     }
     return response.json();
   } catch (error) {
@@ -17,7 +17,7 @@ export const getPlans: GetPlans = async (): Promise<PlanModel[]> => {
   }
 };
 
-type PostPlan = (data: Omit<PlanModel, 'id'>) => Promise<PlanModel>;
+type PostPlan = (data: Omit<PlanModel, 'id' | 'status' | 'value'>) => Promise<PlanModel>;
 
 export const postPlan: PostPlan = async (planData): Promise<PlanModel> => {
   const endpoint = '/api/plans';

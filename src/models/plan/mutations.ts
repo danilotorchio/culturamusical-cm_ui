@@ -8,7 +8,7 @@ export const usePostPlan = () => {
   const queryClient = useQueryClient();
 
   const { data, isPending, isError, error, mutateAsync } = useMutation({
-    mutationFn: (params: Omit<PlanModel, 'id'>) => postPlan(params),
+    mutationFn: (params: Omit<PlanModel, 'id' | 'status' | 'value'>) => postPlan(params),
     onSuccess: (data) => {
       const queryKey = queryKeyPlans();
 
@@ -38,7 +38,12 @@ export const useUpdatePlan = () => {
           return [data];
         }
 
-        return oldData.map((plan) => (plan.id === data.id ? data : plan));
+        return oldData.map((plan) => {
+          if (plan.id === data.id) {
+            return data;
+          }
+          return plan;
+        });
       });
     },
   });

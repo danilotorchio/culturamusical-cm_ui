@@ -1,3 +1,7 @@
+import { cookies } from 'next/headers';
+import { RedirectType, redirect } from 'next/navigation';
+import { NextRequest, NextResponse } from 'next/server';
+
 import { getAuthToken } from './auth';
 
 type FetchOptions = {
@@ -69,4 +73,25 @@ export async function fetchAPI<T>(
   }
 
   return { data: responseData, status: response.status };
+}
+
+export async function processResponse<T>(request: NextRequest, response: { data?: T; error?: string; status: number }) {
+  if (response.error) {
+    if (response.status === HttpStatus.UNAUTHORIZED) {
+      const cookieStore = await cookies();
+      cookieStore.delete('auth-token');
+
+      redirect('/auth/login', RedirectType.replace);
+    }
+
+    return NextResponse.json(
+      { error: response.error },
+      {
+        headers: { 'Content-Type': 'application/json' },
+        status: response.status,
+      },
+    );
+  }
+
+  return NextResponse.json(response.data, { headers: { 'Content-Type': 'application/json' }, status: response.status });
 }

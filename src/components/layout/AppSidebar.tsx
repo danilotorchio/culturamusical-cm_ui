@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import { useAuth } from '@/contexts/auth-context';
 
+import { ModeToggle } from '../mode-toggle';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import {
   Sidebar,
@@ -17,6 +18,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '../ui/sidebar';
 
 export default function AppSidebar() {
@@ -24,6 +26,15 @@ export default function AppSidebar() {
   const router = useRouter();
 
   const { user } = useAuth();
+  const { isMobile, openMobile, toggleSidebar } = useSidebar();
+
+  const handleItemClick = (route: string) => {
+    router.push(route);
+
+    if (isMobile && openMobile) {
+      toggleSidebar();
+    }
+  };
 
   return (
     <Sidebar collapsible="offcanvas" variant="inset">
@@ -48,7 +59,7 @@ export default function AppSidebar() {
                   className="cursor-pointer"
                   tooltip="Matrículas"
                   isActive={pathname === '/enrollments'}
-                  onClick={() => router.push('/enrollments')}
+                  onClick={() => handleItemClick('/enrollments')}
                 >
                   <Users />
                   <span>Matrículas</span>
@@ -59,7 +70,7 @@ export default function AppSidebar() {
                   className="cursor-pointer"
                   tooltip="Planos"
                   isActive={pathname === '/plans'}
-                  onClick={() => router.push('/plans')}
+                  onClick={() => handleItemClick('/plans')}
                 >
                   <CalendarCheck />
                   <span>Planos</span>

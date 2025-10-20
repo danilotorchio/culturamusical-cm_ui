@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
-import { fetchAPI, fetchOptionsGET, fetchOptionsPOST, fetchOptionsPUT } from '@/lib/api';
+import { fetchAPI, fetchOptionsGET, fetchOptionsPOST, fetchOptionsPUT, processResponse } from '@/lib/api';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const options = fetchOptionsGET();
-
   const response = await fetchAPI('/plans', options);
-  return processResponse(response);
+
+  return processResponse(request, response);
 }
 
 export async function POST(request: NextRequest) {
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
   const options = fetchOptionsPOST(body);
 
   const response = await fetchAPI('/plans', options);
-  return processResponse(response);
+  return processResponse(request, response);
 }
 
 export async function PUT(request: NextRequest) {
@@ -22,19 +22,5 @@ export async function PUT(request: NextRequest) {
   const options = fetchOptionsPUT(body);
 
   const response = await fetchAPI('/plans', options);
-  return processResponse(response);
-}
-
-function processResponse<T>(response: { data?: T; error?: string; status: number }) {
-  if (response.error) {
-    return NextResponse.json(
-      { error: response.error },
-      {
-        headers: { 'Content-Type': 'application/json' },
-        status: response.status,
-      },
-    );
-  }
-
-  return NextResponse.json(response.data, { headers: { 'Content-Type': 'application/json' }, status: response.status });
+  return processResponse(request, response);
 }

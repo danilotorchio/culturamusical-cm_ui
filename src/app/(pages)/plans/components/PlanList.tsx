@@ -1,32 +1,25 @@
 'use client';
 
-import { CircleAlert } from 'lucide-react';
-
+import Error from '@/components/error';
 import Loading from '@/components/loading';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { PlanPeriodDescriptions, PlanStatus, PlanStatusDescriptions, usePlansQuery } from '@/models/plan';
+import { PlanPeriodDescriptions, usePlansQuery } from '@/models/plan';
+import { EntityStatus, EntityStatusDescription } from '@/models/types';
 
 import { PlanForm } from './PlanForm';
 
 export function PlanList() {
-  const { data, isPending, isError, error } = usePlansQuery();
+  const { data, isPending, isError, error, refetch } = usePlansQuery();
 
   if (isPending) {
     return <Loading />;
   }
 
   if (isError) {
-    return (
-      <Alert variant="destructive" className="border-red-400 animate__animated animate__headShake">
-        <CircleAlert />
-        <AlertTitle>Erro</AlertTitle>
-        <AlertDescription>{error?.message}</AlertDescription>
-      </Alert>
-    );
+    return <Error message={error.message} onRefresh={() => refetch()} />;
   }
 
   if (data.length === 0) {
@@ -60,8 +53,8 @@ export function PlanList() {
           </TableHeader>
 
           <TableBody>
-            {data.map((item) => (
-              <TableRow key={item.id}>
+            {data.map((item, index) => (
+              <TableRow key={index}>
                 <TableCell>{item.id}</TableCell>
                 <TableCell>{item.name}</TableCell>
                 <TableCell align="right">
@@ -69,8 +62,8 @@ export function PlanList() {
                 </TableCell>
                 <TableCell align="center">{PlanPeriodDescriptions[item.period]}</TableCell>
                 <TableCell align="center">
-                  <Badge variant={item.status === PlanStatus.ACTIVE ? 'default' : 'destructive'}>
-                    {PlanStatusDescriptions[item.status]}
+                  <Badge variant={item.status === EntityStatus.ACTIVE ? 'default' : 'destructive'}>
+                    {EntityStatusDescription[item.status]}
                   </Badge>
                 </TableCell>
                 <TableCell align="right">

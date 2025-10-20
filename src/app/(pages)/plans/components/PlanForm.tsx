@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/dialog';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '@/components/ui/input-group';
 import {
   Select,
   SelectContent,
@@ -31,13 +32,14 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
-import { PlanModel, PlanPeriod, PlanStatus, usePostPlan, useUpdatePlan } from '@/models/plan';
+import { PlanModel, PlanPeriod, usePostPlan, useUpdatePlan } from '@/models/plan';
+import { EntityStatus } from '@/models/types';
 
 const formSchema = z.object({
   name: z.string().trim().min(1, 'Informe o nome do plano'),
   period: z.enum(PlanPeriod, { error: 'Informe o período do plano' }),
-  status: z.enum(PlanStatus, { error: 'Informe o status do plano' }),
-  value: z.any(),
+  status: z.enum(EntityStatus, { error: 'Informe o status do plano' }),
+  value: z.number(),
 });
 
 type FormPlan = z.infer<typeof formSchema>;
@@ -49,11 +51,11 @@ type PlansFormProps = {
 export function PlanForm({ plan }: PlansFormProps) {
   const [open, setOpen] = useState(false);
 
-  const { control, handleSubmit } = useForm<FormPlan>({
+  const { control, handleSubmit, reset } = useForm<FormPlan>({
     defaultValues: {
       name: plan?.name ?? '',
       period: plan?.period ?? PlanPeriod.MONTHLY,
-      status: plan?.status ?? PlanStatus.ACTIVE,
+      status: plan?.status ?? EntityStatus.ACTIVE,
       value: plan?.value ?? 0,
     },
     resolver: zodResolver(formSchema),
@@ -78,10 +80,11 @@ export function PlanForm({ plan }: PlansFormProps) {
       if (plan && plan.id) {
         await mutateAsyncUpdatePlan({ id: plan.id, ...data });
       } else {
-        await mutateAsyncPostPlan(data);
+        await mutateAsyncPostPlan({ name: data.name, period: data.period });
       }
 
       setOpen(false);
+      reset();
     } catch (error) {
       console.error('Plan creation error:', error);
     }
@@ -99,9 +102,9 @@ export function PlanForm({ plan }: PlansFormProps) {
         )}
       </DialogTrigger>
 
-      <DialogContent className="md:max-w-[600px]">
+      <DialogContent className="md:max-w-[600px]" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Adicionar plano</DialogTitle>
+          <DialogTitle>Novo plano</DialogTitle>
         </DialogHeader>
 
         <form id="form-plan" onSubmit={handleSubmit(onSubmit)}>
@@ -124,6 +127,7 @@ export function PlanForm({ plan }: PlansFormProps) {
                 </Field>
               )}
             />
+
             <Controller
               name="period"
               control={control}
@@ -149,31 +153,50 @@ export function PlanForm({ plan }: PlansFormProps) {
                 </Field>
               )}
             />
-            {plan && (
-              <Controller
-                name="value"
-                control={control}
-                defaultValue={plan?.value || 0}
-                disabled={true}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="value">Valor:</FieldLabel>
-                    <Input
-                      id="value"
-                      placeholder="Informe um valor para o plano"
-                      autoComplete="off"
+
+            <Controller
+              name="value"
+              control={control}
+              defaultValue={plan?.value || 0}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="value">Valor:</FieldLabel>
+                  <InputGroup>
+                    <InputGroupAddon>
+                      <InputGroupText>R$</InputGroupText>
+                    </InputGroupAddon>
+                    <InputGroupInput
+                      {...field}
                       aria-invalid={fieldState.invalid}
-                      value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(field.value)}
-                      disabled={field.disabled}
+                      placeholder="0,00"
+                      value={new Intl.NumberFormat('pt-BR', { style: 'decimal', minimumFractionDigits: 2 }).format(
+                        field.value,
+                      )}
+                      onKeyDown={(e) => {
+                        const allowedKeys = ['Backspace', 'Tab', 'Enter'];
+                        if (!/[0-9]/.test(e.key) && !allowedKeys.includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
+                      onChange={(e) => {
+                        const numericValue = parseFloat(e.target.value.replace(/[^\d]/g, ''));
+                        if (!isNaN(numericValue)) {
+                          field.onChange(numericValue / 100);
+                        }
+                      }}
                     />
-                  </Field>
-                )}
-              />
-            )}
+                    <InputGroupAddon align="inline-end">
+                      <InputGroupText>BRL</InputGroupText>
+                    </InputGroupAddon>
+                  </InputGroup>
+                </Field>
+              )}
+            />
+
             <Controller
               name="status"
               control={control}
-              defaultValue={plan?.status || PlanStatus.ACTIVE}
+              defaultValue={plan?.status || EntityStatus.ACTIVE}
               disabled={plan === undefined}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
@@ -185,8 +208,8 @@ export function PlanForm({ plan }: PlansFormProps) {
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Status</SelectLabel>
-                        <SelectItem value={PlanStatus.ACTIVE}>Ativo</SelectItem>
-                        <SelectItem value={PlanStatus.INACTIVE}>Inativo</SelectItem>
+                        <SelectItem value={EntityStatus.ACTIVE}>Ativo</SelectItem>
+                        <SelectItem value={EntityStatus.INACTIVE}>Inativo</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -209,7 +232,7 @@ export function PlanForm({ plan }: PlansFormProps) {
 
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="outline">
+            <Button type="button" variant="outline" disabled={isPendingPostPlan || isPendingUpdatePlan}>
               Cancelar
             </Button>
           </DialogClose>

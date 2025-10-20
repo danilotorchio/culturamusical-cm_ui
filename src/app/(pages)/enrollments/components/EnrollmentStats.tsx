@@ -3,11 +3,11 @@ import { ArrowDown, ArrowUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
-export async function EnrollmentsStats() {
+export async function EnrollmentStats() {
   await new Promise((resolve) => setTimeout(resolve, 1500));
 
   return (
-    <div className="grid grid-cols-4 gap-4 shadow-xs">
+    <div className="grid xl:grid-cols-4 gap-4 shadow-xs">
       <Card>
         <CardHeader>
           <CardDescription>Alunos ativos</CardDescription>
