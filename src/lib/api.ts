@@ -6,7 +6,7 @@ import { getAuthToken } from './auth';
 
 type FetchOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  body?: any;
+  body?: unknown;
   cache?: RequestCache;
   revalidate?: number;
 };
@@ -27,12 +27,12 @@ export const fetchOptionsGET = (cache?: RequestCache): FetchOptions => ({
   cache,
 });
 
-export const fetchOptionsPOST = (data?: any): FetchOptions => ({
+export const fetchOptionsPOST = (data?: unknown): FetchOptions => ({
   method: 'POST',
   body: data,
 });
 
-export const fetchOptionsPUT = (data?: any): FetchOptions => ({
+export const fetchOptionsPUT = (data?: unknown): FetchOptions => ({
   method: 'PUT',
   body: data,
 });
@@ -51,10 +51,10 @@ export async function fetchAPI<T>(
     method: options.method || 'GET',
     headers: {
       'Content-Type': 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` }),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    ...(options.body && { body: JSON.stringify(options.body) }),
-    ...(options.cache && { cache: options.cache }),
+    ...(options.body ? { body: JSON.stringify(options.body) } : {}),
+    ...(options.cache ? { cache: options.cache } : {}),
   };
 
   const response = await fetch(`${process.env.API_URL}${endpoint}`, config);

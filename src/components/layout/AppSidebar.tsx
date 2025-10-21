@@ -1,12 +1,11 @@
 'use client';
 
-import { CalendarCheck, ChartNoAxesCombined, EllipsisVertical, Users } from 'lucide-react';
+import { CalendarCheck, EllipsisVertical, Users } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { useAuth } from '@/contexts/auth-context';
 
-import { ModeToggle } from '../mode-toggle';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import {
   Sidebar,

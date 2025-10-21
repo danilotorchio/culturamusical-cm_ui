@@ -24,7 +24,7 @@ export const useAuth = () => {
   return context;
 };
 
-type AuthProviderProps = PropsWithChildren<{}>;
+type AuthProviderProps = PropsWithChildren;
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<UserModel | null>(null);
